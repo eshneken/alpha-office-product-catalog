@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: product-catalog-app
   labels:
-    commit: ${WERCKER_GIT_COMMIT}
+    commit: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
 spec:
   replicas: 2
   strategy:
@@ -19,12 +19,12 @@ spec:
     metadata:
       labels:
         app: product-catalog-app
-        commit: ${WERCKER_GIT_COMMIT}
+        commit: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
         color: green
     spec:
       containers:
       - name: product-catalog-app-container
-        image: ${DOCKER_REPO}:${WERCKER_GIT_COMMIT}
+        image: ${DOCKER_REPO}:$WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
         imagePullPolicy: Always
         ports:
         - name: pc-app-port
@@ -39,13 +39,13 @@ metadata:
   name: product-catalog-service
   labels:
     app: product-catalog-app
-    commit: ${WERCKER_GIT_COMMIT}
+    commit: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
 spec:
   ports:
   - port: 30000
     targetPort: ${PORT}
   selector:
     app: product-catalog-app
-    commit: ${WERCKER_GIT_COMMIT}
+    commit: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
   type: LoadBalancer
 ---
