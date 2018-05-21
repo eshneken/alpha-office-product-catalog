@@ -22,7 +22,7 @@ push-release:
         repository: $DOCKER_REPO
         registry: $DOCKER_REGISTRY
         tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
-        working-dir: /pipeline/source
+        working-dir: $WERCKER_ROOT
         ports: $PORT
         env: PORT=$PORT
         cmd: node server.js
