@@ -10,6 +10,9 @@ var dbServiceURL = "products";
 // URL for the Twitter REST service
 var tweetServiceBaseURL = "statictweets";
 
+// URL For the Price REST service
+var priceServiceBaseURL = "price";
+
 /*********************************************************
 CHANGE THE URLS ABOVE FOR THE WORKSHOP.
 *********************************************************/
@@ -107,8 +110,13 @@ $(document).ready(function () {
         var j;
         //Get deployment color from twitter feed and update title bar
         $.get('color', function(color) {
+            color = 'green';
           if( color == 'blue' || color == 'green') {
-            $('#podColor').text(' - Served by a ' + color + ' pod');
+            $('#podColor').text('Served by a ' + color + ' pod');
+            if (color == 'blue')
+                $('#podColor').css('color', 'blue');
+            else
+                $('#podColor').css('color', 'lightgreen');
           }
         });
 
@@ -120,6 +128,7 @@ $(document).ready(function () {
         popupHTLMArray[1] = popupHTLMArray[1].replace(" id=\"popupProductC1R3Spacer\"", "");
         popupHTLMArray[1] = popupHTLMArray[1].replace(" id=\"popupControlTd\"", "");
         indexVar = 0;
+
         try {
         //Loop through JSON and populate productArray.
         $.each(holder.Products, function(index, details) {
@@ -152,24 +161,37 @@ $(document).ready(function () {
         tableVar = tableVar.replace(/\(R\)/g, "&reg;");
         tableVar = tableVar.replace(/[^\x00-\x7F]/g, "");
         tableVar = tableVar + "</table>";
+
         // Write table HTML to productDiv.
         document.getElementById("productDiv").innerHTML = tableVar;
         }
         catch(err){
-            console.log("Error parsing the data in the JSON file");
+            console.log("Error parsing the data in the JSON file: " + err);
         }
     }
 });
 
-function innerProductPanelHTML(indexParm) {
-    var htmlVar = "<img src=\"" + productArray[indexParm].external_url +
-            "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParm].product_name + "</div>Price: $" +
-            diplayPrice(productArray[indexParm].list_price) +  ""
+function innerProductPanelHTML(indexParam, price) {
+
+    // call price service to get price
+    $.ajax({
+        url: priceServiceBaseURL + "/" + indexParam,
+        dataType: 'json',
+        async: false,
+        success: function(json) {
+            holder=json;
+        }
+        });
+
+    var htmlVar = "<img src=\"" + productArray[indexParam].external_url +
+            "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParam].product_name + "</div>Price: $" +
+            holder.price +  ""
+            //displayPrice(productArray[indexParam].list_price) +  ""
     return htmlVar;
 }
 
-function diplayPrice(priceParm) {
-    stringVar = Math.round(priceParm * 100).toString();
+function displayPrice(price) {
+    stringVar = Math.round(price * 100).toString();
     stringVar = stringVar.substr(0, (stringVar.length - 2)) + "." + stringVar.substr(stringVar.length - 2);
     return stringVar;
 }
