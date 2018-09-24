@@ -146,7 +146,7 @@ $(document).ready(function () {
             }
             tableVar = tableVar + "<td class=\"productTd\"><table id=\"PROD" + productIndexArray[i] + "\" onclick=\"selectProduct(" +
                 productIndexArray[i] + ")\" class=\"popupTable\">" + popupHTLMArray[0] +
-                innerProductPanelHTML(productIndexArray[i]) +
+                innerProductPanelHTML(productIndexArray[i], true) +
                 popupHTLMArray[1] + "</table></td>";
             if (i == (productIndexArray.length - 1)) {
                 for (j = 0; j < (columnNumberConst - i % columnNumberConst - 1); j++) {
@@ -170,22 +170,29 @@ $(document).ready(function () {
     }
 });
 
-function innerProductPanelHTML(indexParam, price) {
+function innerProductPanelHTML(indexParam, cache) {
 
-    // call price service to get price
-    $.ajax({
-        url: priceServiceBaseURL + "/" + indexParam,
-        dataType: 'json',
-        async: false,
-        success: function(json) {
-            holder=json;
-        }
-        });
-
+    // call price service to get price.  we only get the price from the price service
+    // on individual product details.  we use the locally cached catalog on initial load.
+    var price = "0.00"
+    if(!cache) {
+        $.ajax({
+            url: priceServiceBaseURL + "/" + indexParam,
+            dataType: 'json',
+            async: false,
+            success: function(json) {
+                holder=json;
+            }
+            });
+        price = holder.price;
+    } 
+    else {
+        price = displayPrice(productArray[indexParam].list_price);
+    }
+  
+    // write the price UI
     var htmlVar = "<img src=\"" + productArray[indexParam].external_url +
-            "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParam].product_name + "</div>Price: $" +
-            holder.price +  ""
-            //displayPrice(productArray[indexParam].list_price) +  ""
+            "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParam].product_name + "</div>Price: $" + price +  ""
     return htmlVar;
 }
 
@@ -212,7 +219,7 @@ function selectProduct(idParm) {
     transitionCompletedVar = false;
     getTwitter(hashtagVar);
     popupObjVar = document.getElementById("popupTable");
-    document.getElementById("popupProductContentDiv").innerHTML = innerProductPanelHTML(idParm);
+    document.getElementById("popupProductContentDiv").innerHTML = innerProductPanelHTML(idParm, false);
     selectedObjVar = document.getElementById("PROD" + idParm);
     var offsetVar = getOffset(selectedObjVar);
     popupObjVar.style.visibility = "visible";
