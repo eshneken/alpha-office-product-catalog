@@ -23,6 +23,16 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/alpha.html'));
 });
 
+app.get('/price/', function (req, res) {
+  console.log('Calling price service at: ' + 'http://priceservice:8080/price/');
+  request('http://priceservice:8080/price/', function (error, response, body) {
+    console.log('error:', error);
+    console.log('statusCode:', response && response.statusCode);
+    console.log('body:', body);
+      res.end(body);
+    });
+});
+
 app.get('/price/:id', function (req, res) {
   console.log('Calling price service at: ' + 'http://priceservice:8080/price/' + encodeURIComponent(req.params.id));
   request('http://priceservice:8080/price/' + encodeURIComponent(req.params.id), function (error, response, body) {
