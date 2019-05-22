@@ -117,9 +117,9 @@ app.post('/upload', function(req, res) {
 
 app.get('/products', function(req, res) {
 
-	console.log('/products api called')
-
-    res.end(JSON.stringify(myJSON));
+  console.log('/products api called');
+  res.set('Content-Type', 'application/json')
+  res.end(JSON.stringify(myJSON));
 });
 
 app.get('/searchProductNames', function(req, res) {
@@ -137,7 +137,8 @@ app.get('/searchProductNames', function(req, res) {
 
 app.get('/productNames', function(req, res) {
 
-	console.log('/productNames api called');
+  console.log('/productNames api called');
+  res.set('Content-Type', 'application/json');
   res.end(JSON.stringify(
     myJSON.Products.map(
       product => (({PRODUCT_NAME, PRODUCT_ID}) => ({PRODUCT_NAME, PRODUCT_ID}))(product)
@@ -146,7 +147,8 @@ app.get('/productNames', function(req, res) {
 
 app.get('/product/:id', function(req, res) {
 
-	console.log('/product api called')
+  console.log('/product api called');
+  res.set('Content-Type', 'application/json');
   res.end(JSON.stringify(
     myJSON.Products.filter(product => product.PRODUCT_ID == req.params.id)
   ));
