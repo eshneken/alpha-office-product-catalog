@@ -150,7 +150,7 @@ app.get('/product/:id', function(req, res) {
   console.log('/product api called');
   res.set('Content-Type', 'application/json');
   res.end(JSON.stringify(
-    myJSON.Products.filter(product => product.PRODUCT_ID == req.params.id)
+    myJSON.Products.filter(product => product.PRODUCT_ID == req.params.id)[0]
   ));
 });
 
